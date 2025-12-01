@@ -8,3 +8,5 @@ bs4
 pymupdf
 wikipedia
 langchain-text-splitters
+chromadb
+langchain-ollama
