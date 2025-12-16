@@ -48,7 +48,7 @@ if api_key:
 
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000,chunk_overlap=500)
         splits = text_splitter.split_documents(documents)
-        vectorstore = Chroma.from_documents(documents=documents,embedding=embedding)
+        vectorstore = Chroma.from_documents(documents=splits,embedding=embedding)
         retriever= vectorstore.as_retriever()
 
         contextualize_q_system_prompt=(
@@ -63,7 +63,7 @@ if api_key:
                [
                   ("system",contextualize_q_system_prompt),
                   MessagesPlaceholder("chat_history"),
-                  ("user","{input}"),
+                  ("human","{input}"),
                ]
             )
         history_aware_retriever=create_history_aware_retriever(llm,retriever,contextualize_q_prompt)
@@ -80,8 +80,8 @@ if api_key:
         qa_prompt = ChatPromptTemplate.from_messages(
            [
               ("system",system_prompt),
-              MessagesPlaceholder("chat_history")
-              ("user","{input}")
+              MessagesPlaceholder("chat_history"),
+              ("human","{input}")
            ]
         )
         question_answer_chain=create_stuff_documents_chain(llm,qa_prompt)
@@ -105,7 +105,7 @@ if api_key:
                 {"input": user_input},
                 config={
                     "configurable": {"session_id":session_id}
-                },  # constructs a key "abc123" in `store`.
+                },
             )
             st.write(st.session_state.store)
             st.write("Assistant:", response['answer'])
